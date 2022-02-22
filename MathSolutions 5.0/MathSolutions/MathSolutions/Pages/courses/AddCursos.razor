@@ -1,0 +1,100 @@
+﻿@page "/cursos/add"
+
+<h1>Agregar curso</h1>
+
+<EditForm Model="@curso">
+    <form class="container-border" @onsubmit="Save">
+        @*<div class="mb-2">
+                <label class="col-form-label" for="name">ID</label>
+                <InputText class="form-control" @bind-Value="@curso.IdProfesor" id="IdCurso"></InputText>
+            </div>*@
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Titulo</label>
+            <InputText class="form-control" @bind-Value="@curso.Titulo" id="name"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Fecha de Inicio</label>
+            <InputDate class="form-control" @bind-Value="@curso.FechaInicio" id="fechainicio"></InputDate>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Fecha de Cierre</label>
+            <InputDate class="form-control" @bind-Value="@curso.FechaCierre" id="fechacierre"></InputDate>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Link de laReunion</label>
+            <InputText class="form-control" @bind-Value="@curso.LinkReunion" id="link"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Material</label>
+            <InputText class="form-control" @bind-Value="@curso.Material" id="material"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Descripción</label>
+            <InputText class="form-control" @bind-Value="@curso.Descripcion" id="desc"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">ID del Profesor</label>
+            <InputNumber class="form-control" @bind-Value="@curso.IdProfesor" id="idprof"></InputNumber>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+        <a class="btn btn-outline-danger" href="/cursos">Cancelar</a>
+    </form>
+</EditForm>
+
+@using MathSolutions.Data.Models
+@using MathSolutions.Data
+@inject HttpClient http
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject NavigationManager NavigationManager
+
+@code{
+    [Parameter]
+
+    public bool isUpdate { get; set; } = false;
+
+    public int id { get; set; }
+
+    //bool loading = true;
+
+    //IList<Curso> cursos;
+
+    Curso curso = new Curso();
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    cursos = await http.GetFromJsonAsync<IList<Curso>>("api/curso");
+    //    isUpdate = id != 0;
+    //    if (isUpdate)
+    //    {
+    //        var response = await http.GetFromJsonAsync<Curso>($"api/curso/{id}");
+    //        if (response != null)
+    //        {
+    //            curso = response;
+
+    //        }
+    //    }
+    //    loading = false;
+    //}
+
+    protected async Task Save()
+    {
+        HttpResponseMessage response;
+        if (isUpdate)
+        {
+            response = await http.PutAsJsonAsync<Curso>($"api/curso/{id}", curso!);
+        }
+        else
+        {
+            response = await http.PostAsJsonAsync<Curso>("api/curso", curso!);
+        }
+        Curso Saved = response.Content.ReadFromJsonAsync<Curso>().Result;
+        NavigationManager.NavigateTo("/cursos");
+    }
+}

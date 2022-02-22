@@ -1,0 +1,82 @@
+﻿@page "/estudiantes/add"
+@page "/estudiantes/update/{id:int}"
+
+<h1>Agregar estudiante</h1>
+
+<EditForm Model="@estudiante">
+    <form class="container-border" @onsubmit="Save">
+        @*<div class="mb-2">
+                <label class="col-form-label" for="name">ID</label>
+                <InputText class="form-control" @bind-Value="@estudiante.IdEstudiante" id="idestudiante"></InputText>
+            </div>*@
+        <div class="mb-2">
+            <label class="col-form-label" for="nombrecompleto">Nombre</label>
+            <InputText class="form-control" @bind-Value="@estudiante.NombreCompleto" id="nombrecompleto"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="corre">Correo Electrónico</label>
+            <InputText class="form-control" @bind-Value="@estudiante.Correo" id="correo"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="clave">Contraseña</label>
+            <InputText class="form-control" @bind-Value="@estudiante.Clave" id="clave"></InputText>
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+        <a class="btn btn-outline-danger" href="/estudiantes">Cancelar</a>
+    </form>
+</EditForm>
+
+@using MathSolutions.Data.Models
+@using MathSolutions.Data
+@inject HttpClient http
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject NavigationManager NavigationManager
+
+@code{
+    [Parameter]
+
+    public bool isUpdate { get; set; } = false;
+
+    public int id { get; set; }
+
+    //bool loading = true;
+
+    //IList<Estudiante> estudiantes;
+
+    Estudiante estudiante = new Estudiante();
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    estudiantes = await http.GetFromJsonAsync<IList<Estudiante>>("api/estudiante");
+    //    isUpdate = id != 0;
+    //    if (isUpdate)
+    //    {
+    //        var response = await http.GetFromJsonAsync<Estudiante>($"api/estudiante/{id}");
+    //        if (response != null)
+    //        {
+    //            estudiante = response;
+
+    //        }
+    //    }
+    //    loading = false;
+    //}
+
+    protected async Task Save()
+    {
+        HttpResponseMessage response;
+        if (isUpdate)
+        {
+            response = await http.PutAsJsonAsync<Estudiante>($"api/Estudiante/ModificarInfo/{id}", estudiante!);
+        }
+        else
+        {
+            response = await http.PostAsJsonAsync<Estudiante>("api/CuentaEstudiante/Registrarse", estudiante!);
+        }
+        Estudiante Saved = response.Content.ReadFromJsonAsync<Estudiante>().Result;
+        NavigationManager.NavigateTo("/estudiantes");
+    }
+}

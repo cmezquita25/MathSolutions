@@ -1,0 +1,85 @@
+﻿@page "/profesores/update/{id:int}"
+
+@using MathSolutions.Data.Models
+@using MathSolutions.Data
+@inject HttpClient http
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject NavigationManager NavigationManager
+
+<h1>@(isUpdate ? $"Editar profesor[id: {profesor.IdProfesor}]" : "")</h1>
+
+<EditForm Model="@profesor">
+    <form class="container-border" @onsubmit="Save">
+        @*<div class="mb-2">
+                <label class="col-form-label" for="name">ID</label>
+                <InputText class="form-control" @bind-Value="@profesor.IdProfesor" id="idprofesor"></InputText>
+            </div>*@
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Nombre</label>
+            <InputText class="form-control" @bind-Value="@profesor.NombreCompleto" id="name"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Correo Electrónico</label>
+            <InputText class="form-control" @bind-Value="@profesor.Correo" id="email"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Redes Sociales</label>
+            <InputText class="form-control" @bind-Value="@profesor.RedesSociales" id="redessociales"></InputText>
+        </div>
+
+        <div class="mb-2">
+            <label class="col-form-label" for="name">Descripción</label>
+            <InputText class="form-control" @bind-Value="@profesor.Descripcion" id="desc"></InputText>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Guardar</button>
+        <a class="btn btn-outline-danger" href="/profesores">Cancelar</a>
+    </form>
+</EditForm>
+
+@code{
+    [Parameter]
+
+    public bool isUpdate { get; set; } = false;
+
+    public int id { get; set; }
+
+    //bool loading = true;
+
+    //IList<Profesor> profesors;
+
+    Profesor profesor = new Profesor();
+
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    profesors = await http.GetFromJsonAsync<IList<Profesor>>("api/profesor");
+    //    isUpdate = id != 0;
+    //    if (isUpdate)
+    //    {
+    //        var response = await http.GetFromJsonAsync<Profesor>($"api/profesor/{id}");
+    //        if (response != null)
+    //        {
+    //            profesor = response;
+
+    //        }
+    //    }
+    //    loading = false;
+    //}
+
+    protected async Task Save()
+    {
+        HttpResponseMessage response;
+        if (isUpdate)
+        {
+            response = await http.PutAsJsonAsync<Profesor>($"api/profesor/{id}", profesor!);
+        }
+        else
+        {
+            response = await http.PostAsJsonAsync<Profesor>("api/profesor", profesor!);
+        }
+        Profesor Saved = response.Content.ReadFromJsonAsync<Profesor>().Result;
+        NavigationManager.NavigateTo("/profesores");
+    }
+}
